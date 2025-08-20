@@ -123,8 +123,8 @@ export async function startIntensiveChatSession(
       // Then escape double quotes
       .replace(/"/g, '\\"');
 
-    // Activate Terminal first, then do script with exec
-    const command = `osascript -e 'tell application "Terminal" to activate' -e 'tell application "Terminal" to do script "${escapedNodeCommand}"'`;
+    // Use do script which automatically activates Terminal and creates only one window
+    const command = `osascript -e 'tell application "Terminal" to do script "${escapedNodeCommand}"'`;
     const commandArgs: string[] = []; // No args needed when command is a single string for shell
 
     childProcess = spawn(command, commandArgs, {

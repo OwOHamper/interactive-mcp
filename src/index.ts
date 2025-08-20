@@ -222,8 +222,7 @@ if (isToolEnabled('start_intensive_chat')) {
       // Use inferred args type
       const { sessionTitle } = args;
 
-      // Play notification sound when tool is called
-      await playNotificationAndActivate();
+      // No sound for starting intensive chat - only for asking questions
 
       try {
         // Start a new intensive chat session, passing global timeout

@@ -1,6 +1,30 @@
 # Interactive MCP Rules
 
+## Interactive Communication
 - Never ask questions in chat - always use `mcp_interactive_request_user_input` or intensive chat tools
-- For commands needing approval, call `mcp_interactive_pending_approval_notification` and the actual command tool in PARALLEL (same tool call batch) for faster execution
 - Keep conversations flowing - don't wait for manual user responses
 - Use predefined options when possible for faster selection
+
+## Pending Approval Notifications
+- ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with ANY command that requires user approval
+- Commands requiring approval include:
+  - `run_terminal_cmd` (ALL command executions)
+  - File operations (delete, move, create in sensitive locations)
+  - Git operations (push, pull, merge, reset)
+  - Package installations (npm, pip, etc.)
+  - Database operations
+  - System modifications
+  - Any potentially destructive action
+
+## Execution Pattern
+```
+// CORRECT: Parallel execution for speed
+mcp_interactive_pending_approval_notification({
+  projectName: "Context",
+  message: "About to execute: [specific command]"
+})
+run_terminal_cmd({ command: "[actual command]" })
+
+// WRONG: Sequential execution (slower)
+// Don't wait between notification and command
+```
