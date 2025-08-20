@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/interactive-mcp-enhanced)](https://www.npmjs.com/package/interactive-mcp-enhanced) [![npm downloads](https://img.shields.io/npm/dm/interactive-mcp-enhanced)](https://www.npmjs.com/package/interactive-mcp-enhanced) [![GitHub license](https://img.shields.io/github/license/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/blob/main/LICENSE) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Platforms](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/OwOHamper/interactive-mcp) [![GitHub last commit](https://img.shields.io/github/last-commit/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/commits/main)
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=interactive&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImludGVyYWN0aXZlLW1jcC1lbmhhbmNlZCJdfQ==)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=interactive&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImludGVyYWN0aXZlLW1jcC1lbmhhbmNlZEBsYXRlc3QiXX0=)
 
 A MCP Server implemented in Node.js/TypeScript, facilitating interactive communication between LLMs and users. **Note:** This server is designed to run locally alongside the MCP client (e.g., Cursor, Claude Desktop), as it needs direct access to the user's operating system to display notifications and command-line prompts.
 
@@ -57,33 +57,20 @@ Add the following configuration to your `~/.cursor/mcp.json`:
   "mcpServers": {
     "interactive": {
       "command": "npx",
-      "args": ["-y", "interactive-mcp-enhanced"]
+      "args": ["-y", "interactive-mcp-enhanced@latest"]
     }
   }
 }
 ```
 
-**With Custom Timeout (5 minutes):**
+**With Custom Timeout (10 minutes):**
 
 ```json
 {
   "mcpServers": {
     "interactive": {
       "command": "npx",
-      "args": ["-y", "interactive-mcp-enhanced", "--timeout", "300"]
-    }
-  }
-}
-```
-
-**With Specific Version:**
-
-```json
-{
-  "mcpServers": {
-    "interactive": {
-      "command": "npx",
-      "args": ["-y", "interactive-mcp-enhanced@1.0.1"]
+      "args": ["-y", "interactive-mcp-enhanced@latest", "--timeout", "600"]
     }
   }
 }
@@ -98,7 +85,7 @@ Add the following configuration to your `claude_desktop_config.json`:
   "mcpServers": {
     "interactive": {
       "command": "npx",
-      "args": ["-y", "interactive-mcp-enhanced"]
+      "args": ["-y", "interactive-mcp-enhanced@latest"]
     }
   }
 }
@@ -169,7 +156,7 @@ The `interactive-mcp` server accepts the following command-line options. These s
 ```jsonc
 // Example combining options in client config's "args":
 "args": [
-  "-y", "interactive-mcp-enhanced",
+  "-y", "interactive-mcp-enhanced@latest",
   "-t", "300", // Set timeout to 5 minutes
   "--disable-tools", "pending_approval_notification" // Disable approval notifications
 ]
