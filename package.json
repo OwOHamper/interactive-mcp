@@ -1,5 +1,5 @@
 {
-  "name": "interactive-mcp",
+  "name": "interactive-mcp-enhanced",
   "version": "1.0.0",
   "main": "dist/index.js",
   "type": "module",
@@ -20,10 +20,28 @@
     "check-types": "tsc --noEmit",
     "prepare": "husky"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "interactive",
+    "cli",
+    "notification",
+    "user-input",
+    "ai-assistant",
+    "cursor",
+    "claude"
+  ],
+  "author": "Hamper <barca.teo@gmail.com>",
   "license": "MIT",
-  "description": "",
+  "description": "Enhanced MCP Server for interactive communication between LLMs and users with custom sound notifications, approval workflows, and improved user experience.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OwOHamper/interactive-mcp.git"
+  },
+  "homepage": "https://github.com/OwOHamper/interactive-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/OwOHamper/interactive-mcp/issues"
+  },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
     "@semantic-release/commit-analyzer": "^13.0.1",

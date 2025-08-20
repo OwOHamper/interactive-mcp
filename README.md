@@ -4,7 +4,7 @@
 
 A MCP Server implemented in Node.js/TypeScript, facilitating interactive communication between LLMs and users. **Note:** This server is designed to run locally alongside the MCP client (e.g., Cursor, Claude Desktop), as it needs direct access to the user's operating system to display notifications and command-line prompts.
 
-_Enhanced version based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth), with custom sound notifications and improved approval workflows._
+_Enhanced version based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth), with custom sound notifications, improved approval workflows, bug fixes, Terminal window management, parallel execution support, and enhanced user experience._
 
 ## Tools
 
@@ -182,8 +182,9 @@ You can provide these instructions to an LLM client like this:
 
 ## Pending Approval Notifications
 
-- ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with ANY command that requires user approval
+- ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with commands that require user approval
 - Commands requiring approval include:
+
   - `run_terminal_cmd` (ALL command executions)
   - File operations (delete, move, create in sensitive locations)
   - Git operations (push, pull, merge, reset)
@@ -191,6 +192,12 @@ You can provide these instructions to an LLM client like this:
   - Database operations
   - System modifications
   - Any potentially destructive action
+
+- DO NOT use for automatic operations:
+  - File edits (`search_replace`, `write`, `MultiEdit`)
+  - Reading files (`read_file`)
+  - Searching (`grep`, `codebase_search`)
+  - Building/compiling code
 
 ## Execution Pattern
 
@@ -223,7 +230,7 @@ Contributions are welcome! Please follow standard development practices and main
 
 ## Acknowledgments
 
-This project is based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth). Enhanced with custom sound notifications, improved approval workflows, and better Terminal window management.
+This project is based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth). Enhanced with custom sound notifications, improved approval workflows, bug fixes, Terminal window management, parallel execution support, and enhanced user experience.
 
 ## License
 

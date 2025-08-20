@@ -6,7 +6,7 @@
 - Use predefined options when possible for faster selection
 
 ## Pending Approval Notifications
-- ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with ANY command that requires user approval
+- ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with commands that require user approval
 - Commands requiring approval include:
   - `run_terminal_cmd` (ALL command executions)
   - File operations (delete, move, create in sensitive locations)
@@ -15,6 +15,12 @@
   - Database operations
   - System modifications
   - Any potentially destructive action
+
+- DO NOT use for automatic operations:
+  - File edits (`search_replace`, `write`, `MultiEdit`)
+  - Reading files (`read_file`)
+  - Searching (`grep`, `codebase_search`)
+  - Building/compiling code
 
 ## Execution Pattern
 ```
