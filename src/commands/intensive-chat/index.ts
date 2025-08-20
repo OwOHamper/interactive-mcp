@@ -27,6 +27,32 @@ const activeSessions: Record<string, SessionInfo> = {};
 startSessionMonitoring();
 
 /**
+ * Bring the Terminal window to front (macOS only)
+ */
+async function bringTerminalToFront(): Promise<void> {
+  const platform = os.platform();
+
+  if (platform === 'darwin') {
+    try {
+      // Use AppleScript to activate Terminal and bring it to front
+      const { spawn } = await import('child_process');
+      const activateCommand = `osascript -e 'tell application "Terminal" to activate'`;
+
+      spawn(activateCommand, [], {
+        stdio: ['ignore', 'ignore', 'ignore'],
+        shell: true,
+        detached: true,
+      }).unref();
+    } catch (error) {
+      // Silently ignore errors - window activation is a nice-to-have feature
+      logger.error('Failed to bring Terminal to front:', error);
+    }
+  }
+  // For Windows and Linux, we could potentially implement similar functionality
+  // but it's more complex and platform-specific
+}
+
+/**
  * Generate a unique temporary directory path for a session
  * @returns Path to a temporary directory
  */
@@ -177,6 +203,9 @@ export async function askQuestionInSession(
   // Write the combined input data to a session-specific JSON file
   const inputFilePath = path.join(session.outputDir, `${sessionId}.json`);
   await fs.writeFile(inputFilePath, JSON.stringify(inputData), 'utf8');
+
+  // Bring the Terminal window to front so user sees the new question
+  await bringTerminalToFront();
 
   // Wait for the response file corresponding to the generated ID
   const responseFilePath = path.join(

@@ -6,6 +6,7 @@ import path from 'path'; // Import path module
 import os from 'os'; // Import os module for tmpdir
 import logger from '../../utils/logger.js';
 import { InteractiveInput } from '../../components/InteractiveInput.js'; // Import shared component
+import { USER_INPUT_TIMEOUT_SECONDS } from '../../constants.js'; // Import the constant
 
 interface CmdOptions {
   projectName?: string;
@@ -18,10 +19,10 @@ interface CmdOptions {
   predefinedOptions?: string[];
 }
 
-// Define defaults separately
+// Define defaults separately (timeout should come from passed options, not hardcoded)
 const defaultOptions = {
   prompt: 'Enter your response:',
-  timeout: 30,
+  timeout: USER_INPUT_TIMEOUT_SECONDS, // Use the same default as the main process
   showCountdown: false,
   projectName: undefined,
   predefinedOptions: undefined,
@@ -175,7 +176,7 @@ const App: FC<AppProps> = ({ options: appOptions }) => {
           ) {
             try {
               await fs.writeFile(heartbeatFile, '', 'utf8');
-            } catch (createErr) {
+            } catch {
               // Ignore errors creating heartbeat file (e.g., permissions)
             }
           } else {

@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { z } from 'zod';
 import notifier from 'node-notifier';
 import yargs from 'yargs';
+import {
+  playNotificationSound,
+  playPendingApprovalAlert,
+} from './utils/sound-manager.js';
 import { hideBin } from 'yargs/helpers';
 import { getCmdWindowInput } from './commands/input/index.js';
 import {
@@ -27,7 +30,7 @@ type ToolCapabilitiesStructure = Record<string, ToolCapabilityInfo>;
 // --- Define Full Tool Capabilities from Imports --- (Simplified construction)
 const allToolCapabilities = {
   request_user_input: requestUserInputTool.capability,
-  message_complete_notification: messageCompleteNotificationTool.capability,
+  pending_approval_notification: messageCompleteNotificationTool.capability,
   start_intensive_chat: intensiveChatTools.start.capability,
   ask_intensive_chat: intensiveChatTools.ask.capability,
   stop_intensive_chat: intensiveChatTools.stop.capability,
@@ -46,7 +49,7 @@ const argv = yargs(hideBin(process.argv))
     alias: 'd',
     type: 'string',
     description:
-      'Comma-separated list of tool names to disable. Available options: request_user_input, message_complete_notification, intensive_chat (disables all intensive chat tools).',
+      'Comma-separated list of tool names to disable. Available options: request_user_input, pending_approval_notification, intensive_chat (disables all intensive chat tools).',
     default: '',
   })
   .help()
@@ -61,6 +64,21 @@ const disabledTools = argv['disable-tools']
 
 // Store active intensive chat sessions
 const activeChatSessions = new Map<string, string>();
+
+/**
+ * Play notification sound and bring window to front for interactive tools
+ */
+async function playNotificationAndActivate(): Promise<void> {
+  // Play custom notification sound
+  await playNotificationSound();
+
+  // Also show a brief system notification (without sound since we have custom sound)
+  notifier.notify({
+    title: 'Interactive MCP',
+    message: 'Tool activated',
+    sound: false, // We're using our custom sound instead
+  } as Parameters<typeof notifier.notify>[0]);
+}
 
 // --- Filter Capabilities Based on Args ---
 // Helper function to check if a tool is effectively disabled (directly or via group)
@@ -120,6 +138,10 @@ if (isToolEnabled('request_user_input')) {
     async (args) => {
       // Use inferred args type
       const { projectName, message, predefinedOptions } = args;
+
+      // Play notification sound when tool is called
+      await playNotificationAndActivate();
+
       const promptMessage = `${projectName}: ${message}`;
       const answer = await getCmdWindowInput(
         projectName,
@@ -150,24 +172,34 @@ if (isToolEnabled('request_user_input')) {
   );
 }
 
-if (isToolEnabled('message_complete_notification')) {
+if (isToolEnabled('pending_approval_notification')) {
   // Use properties from the imported tool object
   server.tool(
-    'message_complete_notification',
-    // Description is a string here, but handle consistently
+    'pending_approval_notification',
+    // Description is a string here
     typeof messageCompleteNotificationTool.description === 'function'
       ? messageCompleteNotificationTool.description(globalTimeoutSeconds) // Should not happen based on definition, but safe
       : messageCompleteNotificationTool.description,
     messageCompleteNotificationTool.schema, // Use schema property
-    (args) => {
+    async (args) => {
       // Use inferred args type
       const { projectName, message } = args;
-      notifier.notify({ title: projectName, message });
+
+      // Play loud alert sound for pending approval
+      await playPendingApprovalAlert();
+
+      // Show notification
+      notifier.notify({
+        title: `🚨 ${projectName} - Approval Required`,
+        message: message,
+        sound: false, // We're using our custom loud sound instead
+      } as Parameters<typeof notifier.notify>[0]);
+
       return {
         content: [
           {
             type: 'text',
-            text: 'Notification sent. You can now wait for user input.',
+            text: `Alert sent: ${message}. Loud notification played to get your attention.`,
           },
         ],
       };
@@ -189,6 +221,10 @@ if (isToolEnabled('start_intensive_chat')) {
     async (args) => {
       // Use inferred args type
       const { sessionTitle } = args;
+
+      // Play notification sound when tool is called
+      await playNotificationAndActivate();
+
       try {
         // Start a new intensive chat session, passing global timeout
         const sessionId = await startIntensiveChatSession(
@@ -239,6 +275,7 @@ if (isToolEnabled('ask_intensive_chat')) {
     async (args) => {
       // Use inferred args type
       const { sessionId, question, predefinedOptions } = args;
+
       // Check if session exists
       if (!activeChatSessions.has(sessionId)) {
         return {
@@ -247,6 +284,9 @@ if (isToolEnabled('ask_intensive_chat')) {
           ],
         };
       }
+
+      // Play notification sound when asking a question
+      await playNotificationAndActivate();
 
       try {
         // Ask the question in the session

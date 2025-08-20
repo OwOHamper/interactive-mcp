@@ -7,7 +7,8 @@ import {
 
 // Define capability conforming to ToolCapabilityInfo
 const capabilityInfo: ToolCapabilityInfo = {
-  description: 'Notify when a response has completed via OS notification.',
+  description:
+    'Send a loud alert notification when a tool requires user approval or intervention.',
   parameters: {
     type: 'object',
     properties: {
@@ -18,7 +19,8 @@ const capabilityInfo: ToolCapabilityInfo = {
       },
       message: {
         type: 'string',
-        description: 'The specific notification text (appears in the body)',
+        description:
+          'Description of what action is pending approval (appears in the body)',
       },
     },
     required: ['projectName', 'message'],
@@ -27,39 +29,43 @@ const capabilityInfo: ToolCapabilityInfo = {
 
 // Define description conforming to ToolRegistrationDescription
 const registrationDescription: ToolRegistrationDescription = `<description>
-Notify when a response has completed. Use this tool **once** at the end of **each and every** message to signal completion to the user.
+Send a loud alert notification when a tool requires user approval or intervention. This is specifically for actions that need user permission, like running commands, not for automatic operations like file edits.
 </description>
 
 <importantNotes>
-- (!important!) **MANDATORY:** ONLY use this tool exactly once per message to signal completion. **Do not forget this step.**
+- (!important!) **ONLY use for pending approvals:** Use this when tools are waiting for user permission/intervention
+- (!important!) **NOT for automatic operations:** Don't use for file edits, builds, or other automatic actions
+- (!important!) **Loud alert sound:** Plays attention-grabbing sound to ensure user notices
 </importantNotes>
 
 <whenToUseThisTool>
-- When you've completed answering a user's query
-- When you've finished executing a task or a sequence of tool calls
-- When a multi-step process is complete
-- When you want to provide a summary of completed actions just before ending the response
+- When a command execution is pending user approval
+- When a potentially dangerous operation needs confirmation
+- When user intervention is required to proceed
+- When a tool is blocked waiting for user permission
 </whenToUseThisTool>
 
 <features>
-- Cross-platform OS notifications (Windows, macOS, Linux)
-- Reusable tool to signal end of message
-- Should be called exactly once per LLM response
+- Loud alert sound (Sosumi + Ping on macOS)
+- Cross-platform OS notifications
+- Designed to grab attention for pending approvals
+- Visual notification with sound alert
 </features>
 
 <bestPractices>
-- Keep messages concise
-- Use projectName consistently to group notifications by context
+- Use clear, specific messages about what needs approval
+- Include the specific action that's pending
+- Use consistently for approval-required operations
 </bestPractices>
 
 <parameters>
-- projectName: Identifies the context/project making the notification (appears in notification title)
-- message: The specific notification text (appears in the body)
+- projectName: Context/project name (appears in notification title)
+- message: Description of what action is pending approval
 </parameters>
 
 <examples>
-- { "projectName": "MyApp", "message": "Feature implementation complete. All tests passing." }
-- { "projectName": "MyLib", "message": "Analysis complete: 3 issues found and fixed." }
+- { "projectName": "Terminal", "message": "Command execution pending approval: npm install" }
+- { "projectName": "FileSystem", "message": "File deletion pending approval: important-file.txt" }
 </examples>`;
 
 // Define the Zod schema (as a raw shape object)
