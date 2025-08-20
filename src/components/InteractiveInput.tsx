@@ -20,6 +20,7 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
   );
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [inputValue, setInputValue] = useState<string>('');
+  const [isMultiline, setIsMultiline] = useState<boolean>(false);
 
   useInput((input, key) => {
     if (predefinedOptions.length > 0) {
@@ -40,6 +41,14 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
     }
 
     if (key.return) {
+      if (key.shift) {
+        // Shift+Enter adds a newline for multiline input
+        setInputValue((prev) => prev + '\n');
+        setIsMultiline(true);
+        return;
+      }
+
+      // Regular Enter submits
       if (mode === 'option' && predefinedOptions.length > 0) {
         onSubmit(questionId, predefinedOptions[selectedIndex]);
       } else {
@@ -71,6 +80,12 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
   const handleInputChange = (value: string) => {
     if (value !== inputValue) {
       setInputValue(value);
+
+      // Check if the input contains newlines (from paste or other sources)
+      if (value.includes('\n')) {
+        setIsMultiline(true);
+      }
+
       // If user starts typing, switch to input mode
       if (value.length > 0 && mode === 'option') {
         setMode('input');
@@ -102,7 +117,8 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
       {predefinedOptions.length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
           <Text dimColor={true}>
-            Use ↑/↓ to select options, type for custom input, Enter to submit
+            Use ↑/↓ to select options, type for custom input, Shift+Enter for
+            multiline, Enter to submit
           </Text>
           {predefinedOptions.map((opt, i) => (
             <Text
@@ -120,19 +136,43 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
         </Box>
       )}
 
-      <Box>
-        <Text color={mode === 'input' ? 'greenBright' : undefined}>
-          {mode === 'input' ? '✎ ' : '› '}
-          <TextInput
-            placeholder={
-              predefinedOptions.length > 0
-                ? 'Type or select an option...'
-                : 'Type your answer...'
-            }
-            onChange={handleInputChange}
-            onSubmit={handleSubmit}
-          />
-        </Text>
+      <Box flexDirection="column">
+        {isMultiline && inputValue.includes('\n') ? (
+          // Multiline display
+          <>
+            <Text color={mode === 'input' ? 'greenBright' : 'gray'} dimColor>
+              {predefinedOptions.length > 0
+                ? 'Multiline input (Shift+Enter for new line, Enter to submit):'
+                : 'Multiline input (Shift+Enter for new line, Enter to submit):'}
+            </Text>
+            <Box
+              borderStyle="round"
+              borderColor="cyan"
+              paddingX={1}
+              paddingY={0}
+            >
+              <Text color={mode === 'input' ? 'greenBright' : undefined}>
+                {inputValue || ' '}
+              </Text>
+            </Box>
+          </>
+        ) : (
+          // Single line display
+          <Box>
+            <Text color={mode === 'input' ? 'greenBright' : undefined}>
+              {mode === 'input' ? '✎ ' : '› '}
+              <TextInput
+                placeholder={
+                  predefinedOptions.length > 0
+                    ? 'Type or select an option... (Shift+Enter for multiline)'
+                    : 'Type your answer... (Shift+Enter for multiline)'
+                }
+                onChange={handleInputChange}
+                onSubmit={handleSubmit}
+              />
+            </Text>
+          </Box>
+        )}
       </Box>
     </>
   );
