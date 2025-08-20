@@ -1,6 +1,6 @@
-# Interactive MCP
+# Interactive MCP Enhanced
 
-[![GitHub license](https://img.shields.io/github/license/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/blob/main/LICENSE) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Platforms](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/OwOHamper/interactive-mcp) [![GitHub last commit](https://img.shields.io/github/last-commit/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/commits/main)
+[![npm version](https://img.shields.io/npm/v/interactive-mcp-enhanced)](https://www.npmjs.com/package/interactive-mcp-enhanced) [![npm downloads](https://img.shields.io/npm/dm/interactive-mcp-enhanced)](https://www.npmjs.com/package/interactive-mcp-enhanced) [![GitHub license](https://img.shields.io/github/license/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/blob/main/LICENSE) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Platforms](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/OwOHamper/interactive-mcp) [![GitHub last commit](https://img.shields.io/github/last-commit/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/commits/main)
 
 A MCP Server implemented in Node.js/TypeScript, facilitating interactive communication between LLMs and users. **Note:** This server is designed to run locally alongside the MCP client (e.g., Cursor, Claude Desktop), as it needs direct access to the user's operating system to display notifications and command-line prompts.
 
@@ -38,11 +38,13 @@ This server is ideal for scenarios where an LLM needs to interact directly with 
 - **Alerting users before command execution** with loud notifications.
 - Any workflow requiring user input or confirmation during LLM operation.
 
-## Client Configuration
+## Installation & Configuration
 
-This section explains how to configure MCP clients to use the `interactive-mcp` server.
+This section explains how to configure MCP clients to use the `interactive-mcp-enhanced` server.
 
 By default, user prompts will time out after 60 seconds. You can customize server options like timeout or disabled tools by adding command-line flags directly to the `args` array when configuring your client.
+
+Please make sure you have the `npx` command available.
 
 ### Usage with Cursor
 
@@ -52,8 +54,8 @@ Add the following configuration to your `~/.cursor/mcp.json`:
 {
   "mcpServers": {
     "interactive": {
-      "command": "node",
-      "args": ["/path/to/interactive-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "interactive-mcp-enhanced"]
     }
   }
 }
@@ -65,8 +67,21 @@ Add the following configuration to your `~/.cursor/mcp.json`:
 {
   "mcpServers": {
     "interactive": {
-      "command": "node",
-      "args": ["/path/to/interactive-mcp/dist/index.js", "--timeout", "300"]
+      "command": "npx",
+      "args": ["-y", "interactive-mcp-enhanced", "--timeout", "300"]
+    }
+  }
+}
+```
+
+**With Specific Version:**
+
+```json
+{
+  "mcpServers": {
+    "interactive": {
+      "command": "npx",
+      "args": ["-y", "interactive-mcp-enhanced@1.0.1"]
     }
   }
 }
@@ -80,8 +95,8 @@ Add the following configuration to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "interactive": {
-      "command": "node",
-      "args": ["/path/to/interactive-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "interactive-mcp-enhanced"]
     }
   }
 }
@@ -129,9 +144,14 @@ This section is primarily for developers looking to modify or contribute to the 
 pnpm start
 ```
 
-### Custom Sound Notifications
+### Custom Sound Notifications (Optional)
 
-Place your own `alert.mp3` file in the project root directory to use custom notification sounds instead of system sounds. The server will automatically detect and use your custom sound file.
+For custom notification sounds, you can:
+
+1. **Local Development**: Place your own `alert.mp3` file in the project root directory
+2. **Global Installation**: The server will use system sounds by default when installed via npx
+
+The server will automatically detect and use your custom sound file if available.
 
 #### Command-Line Options
 
@@ -147,7 +167,7 @@ The `interactive-mcp` server accepts the following command-line options. These s
 ```jsonc
 // Example combining options in client config's "args":
 "args": [
-  "/path/to/interactive-mcp/dist/index.js",
+  "-y", "interactive-mcp-enhanced",
   "-t", "300", // Set timeout to 5 minutes
   "--disable-tools", "pending_approval_notification" // Disable approval notifications
 ]
