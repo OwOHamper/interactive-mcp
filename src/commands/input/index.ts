@@ -12,6 +12,32 @@ import logger from '../../utils/logger.js';
 // Get the directory name of the current module
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Bring the Terminal window to front (macOS only)
+ */
+async function bringTerminalToFront(): Promise<void> {
+  const platform = os.platform();
+
+  if (platform === 'darwin') {
+    try {
+      // Use AppleScript to activate Terminal and bring it to front
+      const { spawn } = await import('child_process');
+      const activateCommand = `osascript -e 'tell application "Terminal" to activate'`;
+
+      spawn(activateCommand, [], {
+        stdio: ['ignore', 'ignore', 'ignore'],
+        shell: true,
+        detached: true,
+      }).unref();
+    } catch (error) {
+      // Silently ignore errors - window activation is a nice-to-have feature
+      logger.error('Failed to bring Terminal to front:', error);
+    }
+  }
+  // For Windows and Linux, we could potentially implement similar functionality
+  // but it's more complex and platform-specific
+}
+
 // Define cleanupResources outside the promise to be accessible in the final catch
 async function cleanupResources(
   heartbeatPath: string,
@@ -128,6 +154,9 @@ export async function getCmdWindowInput(
             detached: true,
           });
         }
+
+        // Bring Terminal to front to ensure user sees the prompt
+        await bringTerminalToFront();
 
         let watcher: FSWatcher | null = null;
         let timeoutHandle: NodeJS.Timeout | null = null;

@@ -8,6 +8,7 @@
   },
   "files": [
     "dist",
+    "alert.mp3",
     "README.md",
     "LICENSE",
     "package.json"
