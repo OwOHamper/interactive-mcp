@@ -2,6 +2,8 @@
 
 [![npm version](https://img.shields.io/npm/v/interactive-mcp-enhanced)](https://www.npmjs.com/package/interactive-mcp-enhanced) [![npm downloads](https://img.shields.io/npm/dm/interactive-mcp-enhanced)](https://www.npmjs.com/package/interactive-mcp-enhanced) [![GitHub license](https://img.shields.io/github/license/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/blob/main/LICENSE) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![Platforms](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/OwOHamper/interactive-mcp) [![GitHub last commit](https://img.shields.io/github/last-commit/OwOHamper/interactive-mcp)](https://github.com/OwOHamper/interactive-mcp/commits/main)
 
+[![Add Interactive MCP Enhanced to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=interactive&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImludGVyYWN0aXZlLW1jcC1lbmhhbmNlZCJdfQ==)
+
 A MCP Server implemented in Node.js/TypeScript, facilitating interactive communication between LLMs and users. **Note:** This server is designed to run locally alongside the MCP client (e.g., Cursor, Claude Desktop), as it needs direct access to the user's operating system to display notifications and command-line prompts.
 
 _Enhanced version based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth), with custom sound notifications, improved approval workflows, bug fixes, Terminal window management, parallel execution support, and enhanced user experience._
@@ -42,7 +44,7 @@ This server is ideal for scenarios where an LLM needs to interact directly with 
 
 This section explains how to configure MCP clients to use the `interactive-mcp-enhanced` server.
 
-By default, user prompts will time out after 60 seconds. You can customize server options like timeout or disabled tools by adding command-line flags directly to the `args` array when configuring your client.
+By default, user prompts will time out after 5 minutes (300 seconds). You can customize server options like timeout or disabled tools by adding command-line flags directly to the `args` array when configuring your client.
 
 Please make sure you have the `npx` command available.
 
@@ -159,7 +161,7 @@ The `interactive-mcp` server accepts the following command-line options. These s
 
 | Option            | Alias | Description                              | Default |
 | ----------------- | ----- | ---------------------------------------- | ------- |
-| `--timeout`       | `-t`  | Timeout in seconds for user input        | 60      |
+| `--timeout`       | `-t`  | Timeout in seconds for user input        | 300     |
 | `--disable-tools` | `-d`  | Disable specific tools (comma-separated) | none    |
 
 **Example:** Setting multiple options in the client config `args` array:
