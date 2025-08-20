@@ -1,6 +1,6 @@
 # Interactive MCP Rules
 
 - Never ask questions in chat - always use `mcp_interactive_request_user_input` or intensive chat tools
-- Before running commands, call `mcp_interactive_pending_approval_notification` first  
+- For commands needing approval, call `mcp_interactive_pending_approval_notification` and the actual command tool in PARALLEL (same tool call batch) for faster execution
 - Keep conversations flowing - don't wait for manual user responses
 - Use predefined options when possible for faster selection

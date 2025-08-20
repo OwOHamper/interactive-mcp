@@ -4,13 +4,13 @@ A local MCP server for interactive communication between AI assistants and users
 
 ## Demo
 
-|| Normal Question | Pending Approval Alert |
-|| :--------------------------------------------------------: | :-----------------------------------------------------------------: |
-|| ![Normal Question Demo](./docs/assets/normal-question.gif) | ![Completion Notification Demo](./docs/assets/end-notification.gif) |
+|                      Normal Question                       |                       Pending Approval Alert                        |
+| :--------------------------------------------------------: | :-----------------------------------------------------------------: |
+| ![Normal Question Demo](./docs/assets/normal-question.gif) | ![Completion Notification Demo](./docs/assets/end-notification.gif) |
 
-|| Intensive Chat Start | Intensive Chat End |
-|| :------------------------------------------------------------------: | :--------------------------------------------------------------: |
-|| ![Start Intensive Chat Demo](./docs/assets/start-intensive-chat.gif) | ![End Intensive Chat Demo](./docs/assets/end-intensive-chat.gif) |
+|                         Intensive Chat Start                         |                        Intensive Chat End                        |
+| :------------------------------------------------------------------: | :--------------------------------------------------------------: |
+| ![Start Intensive Chat Demo](./docs/assets/start-intensive-chat.gif) | ![End Intensive Chat Demo](./docs/assets/end-intensive-chat.gif) |
 
 ## Features
 
@@ -41,18 +41,14 @@ pnpm build
 
 ### 2. Configure Cursor
 
-Add to your `~/.cursor/mcp.json`:
+Add to your `~/.cursor/mcp.json` (replace `/path/to/interactive-mcp` with your actual project path):
 
 ```json
 {
   "mcpServers": {
     "interactive": {
       "command": "node",
-      "args": [
-        "/Users/hamper/Documents/Programming/interactive-mcp/dist/index.js",
-        "--timeout",
-        "300"
-      ]
+      "args": ["/path/to/interactive-mcp/dist/index.js", "--timeout", "300"]
     }
   }
 }
@@ -66,7 +62,7 @@ Add these rules to your Cursor settings for automatic interactive behavior:
 # Interactive MCP Rules
 
 - Never ask questions in chat - always use `mcp_interactive_request_user_input` or intensive chat tools
-- Before running commands, call `mcp_interactive_pending_approval_notification` first
+- For commands needing approval, call `mcp_interactive_pending_approval_notification` and the actual command tool in PARALLEL (same tool call batch) for faster execution
 - Keep conversations flowing - don't wait for manual user responses
 - Use predefined options when possible for faster selection
 ```
@@ -114,12 +110,13 @@ mcp_interactive_stop_intensive_chat({ sessionId });
 ### Pending Approval Alert
 
 ```javascript
-// Before running commands that need approval
+// Call notification and command in PARALLEL for faster execution
+// Both tools execute simultaneously in the same batch
 mcp_interactive_pending_approval_notification({
   projectName: 'Terminal',
-  message: 'About to run: npm install',
+  message: 'Command execution pending: npm install',
 });
-// Then run the actual command
+run_terminal_cmd({ command: 'npm install' });
 ```
 
 ## Development
