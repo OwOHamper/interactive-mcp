@@ -27,18 +27,18 @@ const activeSessions: Record<string, SessionInfo> = {};
 startSessionMonitoring();
 
 /**
- * Bring the Terminal window to front (macOS only)
+ * Bring the Terminal process to front without activating all windows (macOS only)
  */
 async function bringTerminalToFront(): Promise<void> {
   const platform = os.platform();
 
   if (platform === 'darwin') {
     try {
-      // Use AppleScript to activate Terminal and bring it to front
+      // Use System Events to focus Terminal process without activating all windows
       const { spawn } = await import('child_process');
-      const activateCommand = `osascript -e 'tell application "Terminal" to activate'`;
+      const focusCommand = `osascript -e 'tell application "System Events" to tell process "Terminal" to set frontmost to true'`;
 
-      spawn(activateCommand, [], {
+      spawn(focusCommand, [], {
         stdio: ['ignore', 'ignore', 'ignore'],
         shell: true,
         detached: true,
@@ -123,7 +123,7 @@ export async function startIntensiveChatSession(
       // Then escape double quotes
       .replace(/"/g, '\\"');
 
-    // Use do script which automatically activates Terminal and creates only one window
+    // Use do script which creates and activates the window
     const command = `osascript -e 'tell application "Terminal" to do script "${escapedNodeCommand}"'`;
     const commandArgs: string[] = []; // No args needed when command is a single string for shell
 
@@ -204,7 +204,7 @@ export async function askQuestionInSession(
   const inputFilePath = path.join(session.outputDir, `${sessionId}.json`);
   await fs.writeFile(inputFilePath, JSON.stringify(inputData), 'utf8');
 
-  // Bring the Terminal window to front so user sees the new question
+  // Use the improved window focus approach
   await bringTerminalToFront();
 
   // Wait for the response file corresponding to the generated ID

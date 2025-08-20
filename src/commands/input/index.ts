@@ -13,16 +13,16 @@ import logger from '../../utils/logger.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- * Bring the Terminal window to front (macOS only)
+ * Bring the most recently created Terminal window to front (macOS only)
  */
 async function bringTerminalToFront(): Promise<void> {
   const platform = os.platform();
 
   if (platform === 'darwin') {
     try {
-      // Use AppleScript to activate Terminal and bring it to front
+      // Use AppleScript to activate the frontmost Terminal window specifically
       const { spawn } = await import('child_process');
-      const activateCommand = `osascript -e 'tell application "Terminal" to activate'`;
+      const activateCommand = `osascript -e 'tell application "Terminal" to set frontmost of window 1 to true' -e 'tell application "Terminal" to activate'`;
 
       spawn(activateCommand, [], {
         stdio: ['ignore', 'ignore', 'ignore'],
@@ -127,7 +127,7 @@ export async function getCmdWindowInput(
             .replace(/\\/g, '\\\\') // Escape backslashes
             .replace(/"/g, '\\"'); // Escape double quotes
 
-          // Use do script which automatically activates Terminal and creates only one window
+          // Use do script which creates and activates the window
           const command = `osascript -e 'tell application "Terminal" to do script "${escapedNodeCommand}"'`;
           const commandArgs: string[] = [];
 
@@ -155,8 +155,23 @@ export async function getCmdWindowInput(
           });
         }
 
-        // Bring Terminal to front to ensure user sees the prompt
-        await bringTerminalToFront();
+        // Add a small delay then focus just the frontmost Terminal window
+        if (platform === 'darwin') {
+          setTimeout(async () => {
+            try {
+              const { spawn } = await import('child_process');
+              // Focus the frontmost Terminal window without activating the entire app
+              const focusCommand = `osascript -e 'tell application "System Events" to tell process "Terminal" to set frontmost to true'`;
+              spawn(focusCommand, [], {
+                stdio: ['ignore', 'ignore', 'ignore'],
+                shell: true,
+                detached: true,
+              }).unref();
+            } catch (error) {
+              logger.error('Failed to focus Terminal window:', error);
+            }
+          }, 200);
+        }
 
         let watcher: FSWatcher | null = null;
         let timeoutHandle: NodeJS.Timeout | null = null;
