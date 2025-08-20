@@ -1,6 +1,6 @@
 # Interactive MCP
 
-A local MCP server for interactive communication between AI assistants and users. Features popup prompts, intensive chat sessions, and loud notification alerts for pending approvals.
+Simple [MCP Server](https://modelcontextprotocol.io/) that enables interactive communication between AI assistants and users through popup prompts, chat sessions, and loud notification alerts. Perfect for [Cursor](https://www.cursor.com), [Claude Desktop](https://claude.ai/desktop), and other MCP-compatible tools.
 
 ## Demo
 
@@ -12,51 +12,20 @@ A local MCP server for interactive communication between AI assistants and users
 | :------------------------------------------------------------------: | :--------------------------------------------------------------: |
 | ![Start Intensive Chat Demo](./docs/assets/start-intensive-chat.gif) | ![End Intensive Chat Demo](./docs/assets/end-intensive-chat.gif) |
 
-## Features
+## 💡 Why Use This?
 
-- **🗨️ Interactive Prompts**: Ask questions with popup command-line interfaces
-- **💬 Intensive Chat**: Multi-question sessions with persistent chat windows
-- **🚨 Loud Alerts**: Attention-grabbing notifications for pending approvals
-- **⏱️ Configurable Timeouts**: Custom timeout settings (default: 60 seconds)
-- **🎵 Sound Notifications**: Audio alerts on macOS with system sounds
+Stop your AI from guessing! Instead of making assumptions, your AI assistant will:
 
-## Tools
+- **Ask clarifying questions** through interactive popup prompts
+- **Gather multiple inputs** via persistent chat sessions
+- **Alert you loudly** when commands need approval (with sound!)
+- **Keep conversations flowing** without dead-end "let me know..." responses
 
-- `request_user_input`: Single questions with predefined options
-- `pending_approval_notification`: Loud alerts for actions needing approval
-- `start_intensive_chat`: Begin multi-question chat session
-- `ask_intensive_chat`: Ask questions within active session
-- `stop_intensive_chat`: End chat session
+This dramatically improves AI interactions by ensuring clear communication and reducing costly guesswork.
 
-## Quick Setup
+## Cursor Integration
 
-### 1. Build the Project
-
-```bash
-git clone <your-repo-url>
-cd interactive-mcp
-pnpm install
-pnpm build
-```
-
-### 2. Configure Cursor
-
-Add to your `~/.cursor/mcp.json` (replace `/path/to/interactive-mcp` with your actual project path):
-
-```json
-{
-  "mcpServers": {
-    "interactive": {
-      "command": "node",
-      "args": ["/path/to/interactive-mcp/dist/index.js", "--timeout", "300"]
-    }
-  }
-}
-```
-
-### 3. Add Cursor Rules (Optional)
-
-Add these rules to your Cursor settings for automatic interactive behavior:
+For the best results, add these rules to your Cursor settings:
 
 ```markdown
 # Interactive MCP Rules
@@ -67,11 +36,59 @@ Add these rules to your Cursor settings for automatic interactive behavior:
 - Use predefined options when possible for faster selection
 ```
 
-### 4. Restart Cursor
+This ensures your AI assistant uses interactive tools instead of ending conversations and waiting.
 
-Restart Cursor to load the MCP server and start using interactive tools!
+## Features
 
-## Command Line Options
+- **🗨️ Interactive Prompts**: Ask questions with popup command-line interfaces
+- **💬 Intensive Chat**: Multi-question sessions with persistent chat windows
+- **🚨 Loud Alerts**: Attention-grabbing notifications for pending approvals (Sosumi + Ping sounds on macOS)
+- **⏱️ Configurable Timeouts**: Custom timeout settings (default: 60 seconds)
+- **🎵 Sound Notifications**: Audio alerts to grab your attention
+- **⚡ Parallel Execution**: Notifications and commands run simultaneously for speed
+
+## Installation
+
+### Prerequisites
+
+- Node.js and pnpm
+- macOS recommended for full sound support
+
+### Setup
+
+1. **Clone and build:**
+
+   ```bash
+   git clone https://github.com/OwOHamper/interactive-mcp.git
+   cd interactive-mcp
+   pnpm install
+   pnpm build
+   ```
+
+2. **Configure Cursor** - Add to your `~/.cursor/mcp.json`:
+
+   ```json
+   {
+     "mcpServers": {
+       "interactive": {
+         "command": "node",
+         "args": ["/path/to/interactive-mcp/dist/index.js", "--timeout", "300"]
+       }
+     }
+   }
+   ```
+
+3. **Restart Cursor** and start using interactive tools!
+
+## Available Tools
+
+- `request_user_input` - Single questions with predefined options
+- `pending_approval_notification` - Loud alerts for actions needing approval
+- `start_intensive_chat` - Begin multi-question chat session
+- `ask_intensive_chat` - Ask questions within active session
+- `stop_intensive_chat` - End chat session
+
+## Configuration Options
 
 | Option                  | Description                              | Default |
 | ----------------------- | ---------------------------------------- | ------- |
@@ -84,59 +101,32 @@ Example with 5-minute timeout:
 node dist/index.js --timeout 300
 ```
 
-## Usage Examples
+## How It Works
 
-### Single Question
+### Single Questions
 
-```javascript
-// AI will call this instead of asking in chat
-mcp_interactive_request_user_input({
-  projectName: 'Setup',
-  message: 'Which framework do you prefer?',
-  predefinedOptions: ['React', 'Vue', 'Angular'],
-});
-```
+Instead of: _"Which framework do you prefer?"_ (conversation ends)  
+AI calls: `mcp_interactive_request_user_input` with options → gets answer → continues
 
 ### Multiple Questions
 
-```javascript
-// For complex workflows with multiple questions
-mcp_interactive_start_intensive_chat({ sessionTitle: 'Project Setup' });
-mcp_interactive_ask_intensive_chat({ sessionId, question: 'Choose database:' });
-mcp_interactive_ask_intensive_chat({ sessionId, question: 'Choose styling:' });
-mcp_interactive_stop_intensive_chat({ sessionId });
-```
+Instead of: _"I need several details..."_ (conversation ends)  
+AI calls: intensive chat workflow → asks all questions → gets all answers → continues
 
-### Pending Approval Alert
+### Pending Approvals
 
-```javascript
-// Call notification and command in PARALLEL for faster execution
-// Both tools execute simultaneously in the same batch
-mcp_interactive_pending_approval_notification({
-  projectName: 'Terminal',
-  message: 'Command execution pending: npm install',
-});
-run_terminal_cmd({ command: 'npm install' });
-```
-
-## Development
-
-```bash
-# Build
-pnpm build
-
-# Run locally
-pnpm start
-
-# Lint
-pnpm lint
-```
+Instead of: Silent command execution  
+AI calls: notification + command in parallel → you get loud alert → command runs
 
 ## Platform Support
 
-- **macOS**: Full support with Terminal windows and system sounds
+- **macOS**: Full support with Terminal windows and system sounds (Sosumi, Ping)
 - **Windows/Linux**: Basic support with command prompts
 
 ## License
 
 MIT
+
+---
+
+_Stop your AI from guessing - start communicating interactively!_ 🎯
