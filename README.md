@@ -181,17 +181,17 @@ The `interactive-mcp` server accepts the following command-line options. These s
 - **Lint:** `pnpm lint`
 - **Format:** `pnpm format`
 
-## Guiding Principles for Interaction
+## Cursor Integration Rules
 
-When interacting with this MCP server (e.g., as an LLM client), please adhere to the following principles to ensure clarity and reduce unexpected changes:
+To get the best experience with this MCP server in Cursor, add these rules to your Cursor settings:
 
-- **Prioritize Interaction:** Utilize the provided MCP tools (`request_user_input`, `start_intensive_chat`, etc.) frequently to engage with the user.
-- **Seek Clarification:** If requirements, instructions, or context are unclear, **always** ask clarifying questions before proceeding. Do not make assumptions.
-- **Confirm Actions:** Before performing significant actions (like modifying files, running complex commands, or making architectural decisions), confirm the plan with the user.
-- **Alert Before Commands:** Always use `pending_approval_notification` before executing commands that require user approval.
-- **Provide Options:** Whenever possible, present the user with predefined options through the MCP tools to facilitate quick decisions.
+### Option 1: Quick Setup
 
-You can provide these instructions to an LLM client like this:
+Copy the `CURSOR-RULES.md` file from this repository to your project root.
+
+### Option 2: Manual Setup
+
+Add these rules to your Cursor user rules or project settings:
 
 ```markdown
 # Interactive MCP Rules
@@ -231,12 +231,18 @@ message: "About to execute: [specific command]"
 run_terminal_cmd({ command: "[actual command]" })
 ```
 
+These rules ensure Cursor's AI will:
+
+- Always use interactive prompts instead of assumptions
+- Play notification sounds before command execution
+- Provide you with options for quick decisions
+
 ## Features
 
 - **🗨️ Interactive Prompts**: Ask questions with popup command-line interfaces
 - **💬 Intensive Chat**: Multi-question sessions with persistent chat windows
 - **🚨 Loud Alerts**: Attention-grabbing notifications for pending approvals
-- **⏱️ Configurable Timeouts**: Custom timeout settings (default: 60 seconds)
+- **⏱️ Configurable Timeouts**: Custom timeout settings (default: 5 minutes)
 - **🎵 Custom Sound**: Place `alert.mp3` in project root for your own notification sound
 - **⚡ Parallel Execution**: Notifications and commands run simultaneously for speed
 - **🪟 Single Window**: Fixed Terminal window management on macOS
