@@ -36,7 +36,9 @@ async function bringTerminalToFront(): Promise<void> {
     try {
       // Use System Events to focus Terminal process without activating all windows
       const { spawn } = await import('child_process');
-      const focusCommand = `osascript -e 'tell application "System Events" to tell process "Terminal" to set frontmost to true'`;
+      // Use a simpler approach - just activate Terminal and bring it to front
+      // This should work better for the current active Terminal session
+      const focusCommand = `osascript -e 'tell application "Terminal" to activate'`;
 
       spawn(focusCommand, [], {
         stdio: ['ignore', 'ignore', 'ignore'],
