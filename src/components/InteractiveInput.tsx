@@ -1,5 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
+import { readClipboard } from '../utils/clipboard.js';
 
 interface InteractiveInputProps {
   question: string;
@@ -33,6 +34,24 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
 
   // Capture key presses
   useInput((input, key) => {
+    // Handle clipboard paste (Cmd+V on macOS, Ctrl+V on Windows/Linux)
+    if ((key.meta && input === 'v') || (key.ctrl && input === 'v')) {
+      // Switch to custom mode for paste
+      setMode('custom');
+
+      // Try to read clipboard content
+      readClipboard()
+        .then((clipboardText) => {
+          if (clipboardText) {
+            setCustomValue((prev) => prev + clipboardText);
+          }
+        })
+        .catch(() => {
+          // Clipboard access failed, continue normally
+        });
+      return;
+    }
+
     if ((key.upArrow || key.downArrow) && predefinedOptions?.length) {
       // cycle selection among predefined options
       setSelectedIndex((prev) => {
@@ -60,11 +79,14 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
       if (customValue.length > 0) {
         setCustomValue((prev) => prev.slice(0, -1));
       }
-    } else if (input && input.length === 1 && !key.ctrl && !key.meta) {
-      // Any other non-modifier key appends to custom input
+    } else if (input && input.length >= 1 && !key.meta && !key.ctrl) {
+      // Allow any input including multi-character input (supports voice apps like Wispr Flow)
       setMode('custom');
       // Simply append to the end
       setCustomValue((prev) => prev + input);
+    } else if (key.ctrl || key.meta) {
+      // Allow other system shortcuts to pass through
+      return;
     }
   });
 
@@ -121,6 +143,15 @@ export const InteractiveInput: FC<InteractiveInputProps> = ({
             {mode === 'custom' && customValue.length === 0 && '_'}
           </Text>
         </Box>
+      </Box>
+
+      {/* Help text */}
+      <Box marginBottom={1}>
+        <Text color="gray" dimColor>
+          {predefinedOptions && predefinedOptions.length > 0
+            ? 'Tip: ↑/↓ for options, type for custom input, Cmd+V/Ctrl+V to paste, Enter to submit'
+            : 'Tip: Type your answer, Cmd+V/Ctrl+V to paste, Enter to submit'}
+        </Text>
       </Box>
     </>
   );

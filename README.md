@@ -297,9 +297,29 @@ These rules are **essential for proper operation** - they ensure the interactive
 
 Contributions are welcome! Please follow standard development practices and maintain compatibility with the original interactive-mcp design principles.
 
+## ⌨️ Keyboard Shortcuts & Accessibility
+
+During input sessions, you can use:
+
+- **Arrow Keys (↑/↓)**: Navigate between predefined options (if available)
+- **Left/Right Arrow**: Switch to custom input mode
+- **Enter**: Submit your answer
+- **Backspace/Delete**: Edit your custom input
+- **Cmd+V / Ctrl+V**: Paste from clipboard
+- **Any text**: Automatically switches to custom input mode
+
+### 📋 Clipboard Support
+
+The enhanced version includes full clipboard support for seamless pasting from any source, including voice applications like Wispr Flow:
+- **macOS**: Uses `pbpaste` and `pbcopy`
+- **Windows**: Uses PowerShell clipboard commands
+- **Linux**: Uses `xclip` (if available)
+
+Voice applications like Wispr Flow work by pasting transcribed text, so the improved paste functionality automatically supports these tools.
+
 ## Acknowledgments
 
-This project is based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth). Enhanced with custom sound notifications, improved approval workflows, bug fixes, Terminal window management, parallel execution support, and enhanced user experience.
+This project is based on the original [interactive-mcp](https://github.com/ttommyth/interactive-mcp) by [@ttommyth](https://github.com/ttommyth). Enhanced with custom sound notifications, improved approval workflows, bug fixes, Terminal window management, parallel execution support, clipboard support, and enhanced user experience.
 
 ## License
 
