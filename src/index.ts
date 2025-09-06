@@ -3,10 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import notifier from 'node-notifier';
 import yargs from 'yargs';
-import {
-  playNotificationSound,
-  playPendingApprovalAlert,
-} from './utils/sound-manager.js';
+import { playNotificationSound } from './utils/sound-manager.js';
 import { hideBin } from 'yargs/helpers';
 import { getCmdWindowInput } from './commands/input/index.js';
 import {
@@ -18,7 +15,6 @@ import { USER_INPUT_TIMEOUT_SECONDS } from './constants.js';
 
 // Import tool definitions using the new structure
 import { requestUserInputTool } from './tool-definitions/request-user-input.js';
-import { messageCompleteNotificationTool } from './tool-definitions/message-complete-notification.js';
 import { intensiveChatTools } from './tool-definitions/intensive-chat.js';
 // Import the types for better type checking
 import { ToolCapabilityInfo } from './tool-definitions/types.js';
@@ -30,7 +26,6 @@ type ToolCapabilitiesStructure = Record<string, ToolCapabilityInfo>;
 // --- Define Full Tool Capabilities from Imports --- (Simplified construction)
 const allToolCapabilities = {
   request_user_input: requestUserInputTool.capability,
-  pending_approval_notification: messageCompleteNotificationTool.capability,
   start_intensive_chat: intensiveChatTools.start.capability,
   ask_intensive_chat: intensiveChatTools.ask.capability,
   stop_intensive_chat: intensiveChatTools.stop.capability,
@@ -49,7 +44,7 @@ const argv = yargs(hideBin(process.argv))
     alias: 'd',
     type: 'string',
     description:
-      'Comma-separated list of tool names to disable. Available options: request_user_input, pending_approval_notification, intensive_chat (disables all intensive chat tools).',
+      'Comma-separated list of tool names to disable. Available options: request_user_input, intensive_chat (disables all intensive chat tools).',
     default: '',
   })
   .help()
@@ -168,41 +163,6 @@ if (isToolEnabled('request_user_input')) {
         const reply = `User replied: ${answer}`;
         return { content: [{ type: 'text', text: reply }] };
       }
-    },
-  );
-}
-
-if (isToolEnabled('pending_approval_notification')) {
-  // Use properties from the imported tool object
-  server.tool(
-    'pending_approval_notification',
-    // Description is a string here
-    typeof messageCompleteNotificationTool.description === 'function'
-      ? messageCompleteNotificationTool.description(globalTimeoutSeconds) // Should not happen based on definition, but safe
-      : messageCompleteNotificationTool.description,
-    messageCompleteNotificationTool.schema, // Use schema property
-    async (args) => {
-      // Use inferred args type
-      const { projectName, message } = args;
-
-      // Play loud alert sound for pending approval
-      await playPendingApprovalAlert();
-
-      // Show notification
-      notifier.notify({
-        title: `🚨 ${projectName} - Approval Required`,
-        message: message,
-        sound: false, // We're using our custom loud sound instead
-      } as Parameters<typeof notifier.notify>[0]);
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Alert sent: ${message}. Loud notification played to get your attention.`,
-          },
-        ],
-      };
     },
   );
 }

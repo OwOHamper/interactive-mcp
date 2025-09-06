@@ -10,55 +10,133 @@
    - ✅ REQUIRED: Always use `mcp_interactive_request_user_input`
    - ✅ REQUIRED: Always use intensive chat tools for multiple questions
 
-2. **KEEP CONVERSATIONS FLOWING**
+2. **NEVER END CONVERSATIONS WITHOUT USER INPUT**
 
+   - ❌ FORBIDDEN: Ending responses without confirming next steps
+   - ❌ FORBIDDEN: Saying "Let me know if you need anything else"
    - ❌ FORBIDDEN: Waiting for manual user responses in chat
-   - ✅ REQUIRED: Use interactive tools to maintain flow
+   - ✅ REQUIRED: Use interactive tools to gather clarification
+   - ✅ REQUIRED: Use interactive tools to confirm next actions
    - ✅ REQUIRED: Use predefined options for faster selection
 
-3. **INTERACTIVE TOOLS ARE NOT OPTIONAL**
+3. **INTERACTIVE TOOLS ARE MANDATORY - NOT OPTIONAL**
    - These tools MUST be used for ANY user input needs
    - No exceptions - even for simple yes/no questions
    - This is a core feature requirement, not a suggestion
+   - **USE THESE TOOLS INSTEAD OF ENDING THE CONVERSATION**
 
-## 🚨 MANDATORY PENDING APPROVAL NOTIFICATIONS 🚨
+## 🚨 CRITICAL RULE: ALWAYS USE INTERACTIVE TOOLS 🚨
 
-### 🔥 CRITICAL RULE: PARALLEL EXECUTION REQUIRED 🔥
+### 🔥 INSTEAD OF ENDING THE CONVERSATION, DO THIS: 🔥
 
-**ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with commands requiring approval**
-
-### Commands REQUIRING Approval Notifications:
-
-- ✅ `run_terminal_cmd` (ALL command executions - NO EXCEPTIONS)
-- ✅ File operations (delete, move, create in sensitive locations)
-- ✅ Git operations (push, pull, merge, reset)
-- ✅ Package installations (npm, pip, yarn, pnpm, etc.)
-- ✅ Database operations
-- ✅ System modifications
-- ✅ Network requests to external APIs
-- ✅ Any potentially destructive action
-- ✅ Configuration changes
-- ✅ Environment modifications
-
-### Operations NOT Requiring Notifications:
-
-- ❌ File edits (`search_replace`, `write`, `MultiEdit`)
-- ❌ Reading files (`read_file`)
-- ❌ Searching (`grep`, `codebase_search`)
-- ❌ Building/compiling code (unless it modifies system)
-
-## 🎯 EXECUTION PATTERN - FOLLOW EXACTLY 🎯
+**When you would normally end a conversation or ask a question in chat:**
 
 ```javascript
-// ✅ CORRECT: Parallel execution for speed
-mcp_interactive_pending_approval_notification({
-  projectName: 'ProjectName',
-  message: 'About to execute: [specific command]',
-});
-run_terminal_cmd({ command: '[actual command]' });
+// ❌ WRONG: Ending conversation
+// "Let me know if you need anything else"
+// "Is there anything specific you'd like me to help with?"
 
-// ❌ WRONG: Sequential execution (slower)
-// Never wait between notification and command
+// ✅ CORRECT: Use interactive tools to continue
+mcp_interactive_request_user_input({
+  projectName: 'Assistant',
+  message: 'What would you like me to help with next?',
+  predefinedOptions: [
+    'Continue current task',
+    'Start new task',
+    "Review what we've done",
+    'Exit',
+  ],
+});
+```
+
+### 🎯 MANDATORY USAGE PATTERNS 🎯
+
+**ALWAYS use interactive tools in these situations:**
+
+1. **Before ending any conversation** → Ask what to do next
+2. **When making assumptions** → Confirm with user
+3. **When multiple approaches exist** → Let user choose
+4. **When unclear about requirements** → Get clarification
+5. **After completing tasks** → Ask for next steps
+6. **When encountering errors** → Ask how to proceed
+7. **When needing preferences** → Get user input
+8. **ANY time you need user input** → Use tools, not chat
+
+## 🔥 CONVERSATION FLOW ENFORCEMENT 🔥
+
+### 🚨 MANDATORY FLOW RULES 🚨
+
+1. **NEVER leave conversations hanging**
+2. **ALWAYS follow up with interactive prompts**
+3. **KEEP the user engaged through tools**
+4. **PROACTIVELY ask what to do next**
+5. **USE intensive chat for complex interactions**
+
+### 📋 REQUIRED CHECKLIST FOR EVERY RESPONSE
+
+Before responding, verify:
+
+- [ ] Am I asking a question? → Use `mcp_interactive_request_user_input`
+- [ ] Am I about to end the conversation? → Use interactive tools instead
+- [ ] Am I making assumptions? → Use interactive tools to confirm
+- [ ] Am I gathering multiple inputs? → Use intensive chat
+- [ ] Could the user want to do something else? → Ask using interactive tools
+
+## 🎯 EXECUTION EXAMPLES 🎯
+
+### ✅ CORRECT: Instead of ending conversation
+
+```javascript
+// Instead of: "Task completed! Let me know if you need help with anything else."
+mcp_interactive_request_user_input({
+  projectName: 'Task Complete',
+  message: 'Task finished successfully! What would you like to do next?',
+  predefinedOptions: [
+    'Make improvements to what we just did',
+    'Work on a related task',
+    'Start something completely new',
+    'Review and explain what we accomplished',
+    "I'm all set for now",
+  ],
+});
+```
+
+### ✅ CORRECT: Instead of asking for clarification in chat
+
+```javascript
+// Instead of: "Could you clarify what you mean by 'optimize'?"
+mcp_interactive_request_user_input({
+  projectName: 'Clarification Needed',
+  message:
+    'I want to optimize this for you. What type of optimization are you looking for?',
+  predefinedOptions: [
+    'Performance/speed improvements',
+    'Code readability and maintainability',
+    'Memory usage optimization',
+    'Bundle size reduction',
+    "Something else (I'll specify)",
+  ],
+});
+```
+
+### ✅ CORRECT: Multiple related questions
+
+```javascript
+// Use intensive chat for gathering multiple inputs
+mcp_interactive_start_intensive_chat({
+  sessionTitle: 'Project Setup Configuration',
+});
+
+// Then ask each question in sequence...
+mcp_interactive_ask_intensive_chat({
+  sessionId: sessionId,
+  question: 'What framework would you like to use?',
+  predefinedOptions: ['React', 'Vue', 'Angular', 'Vanilla JS'],
+});
+
+// Continue with more questions...
+// Always end with:
+mcp_interactive_stop_intensive_chat({ sessionId: sessionId });
 ```
 
 ## 🔥 ENFORCEMENT RULES 🔥
@@ -68,14 +146,24 @@ run_terminal_cmd({ command: '[actual command]' });
 3. **Assistant must follow these patterns automatically**
 4. **Violation of these rules breaks the interactive experience**
 5. **When in doubt, use interactive tools - they're always preferred**
+6. **NEVER end conversations without using interactive tools first**
 
-## 📋 QUICK CHECKLIST FOR EVERY RESPONSE
+## 🚨 WHAT NOT TO DO 🚨
 
-Before responding, verify:
+### ❌ FORBIDDEN PHRASES/PATTERNS:
 
-- [ ] Am I asking a question? → Use interactive tools
-- [ ] Am I running a command? → Use approval notification in parallel
-- [ ] Am I gathering multiple inputs? → Use intensive chat
-- [ ] Am I making assumptions? → Ask using interactive tools instead
+- "Let me know if you need anything else"
+- "Is there anything specific you'd like me to help with?"
+- "Feel free to ask if you have questions"
+- "Would you like me to..."
+- Any question asked directly in chat
+- Ending responses without interactive follow-up
 
-**REMEMBER: These are not suggestions - they are mandatory requirements for proper system operation.**
+### ✅ REQUIRED REPLACEMENTS:
+
+- Use `mcp_interactive_request_user_input` for ALL questions
+- Use intensive chat for complex interactions
+- ALWAYS follow up completed tasks with interactive prompts
+- PROACTIVELY offer next steps through interactive tools
+
+**REMEMBER: These are not suggestions - they are mandatory requirements for proper system operation. The goal is to NEVER end conversations abruptly and ALWAYS keep the user engaged through interactive tools.**

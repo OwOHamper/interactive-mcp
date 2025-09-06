@@ -74,10 +74,3 @@ async function playCustomAlert(): Promise<void> {
 export async function playNotificationSound(): Promise<void> {
   await playCustomAlert();
 }
-
-/**
- * Play pending approval alert - now uses custom alert.mp3
- */
-export async function playPendingApprovalAlert(): Promise<void> {
-  await playCustomAlert();
-}

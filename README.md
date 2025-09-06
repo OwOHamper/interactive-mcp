@@ -13,7 +13,6 @@ _Enhanced version based on the original [interactive-mcp](https://github.com/tto
 This server exposes the following tools via the Model Context Protocol (MCP):
 
 - `request_user_input`: Asks the user a question and returns their answer. Can display predefined options.
-- `pending_approval_notification`: Sends loud alert notifications for actions requiring user approval.
 - `start_intensive_chat`: Initiates a persistent command-line chat session.
 - `ask_intensive_chat`: Asks a question within an active intensive chat session.
 - `stop_intensive_chat`: Closes an active intensive chat session.
@@ -22,9 +21,9 @@ This server exposes the following tools via the Model Context Protocol (MCP):
 
 Here are demonstrations of the interactive features:
 
-|                      Normal Question                       |                       Pending Approval Alert                        |
-| :--------------------------------------------------------: | :-----------------------------------------------------------------: |
-| ![Normal Question Demo](./docs/assets/normal-question.gif) | ![Completion Notification Demo](./docs/assets/end-notification.gif) |
+|                      Normal Question                       |
+| :--------------------------------------------------------: |
+| ![Normal Question Demo](./docs/assets/normal-question.gif) |
 
 |                         Intensive Chat Start                         |                        Intensive Chat End                        |
 | :------------------------------------------------------------------: | :--------------------------------------------------------------: |
@@ -37,8 +36,8 @@ This server is ideal for scenarios where an LLM needs to interact directly with 
 - Interactive setup or configuration processes.
 - Gathering feedback during code generation or modification.
 - Clarifying instructions or confirming actions in pair programming.
-- **Alerting users before command execution** with loud notifications.
 - Any workflow requiring user input or confirmation during LLM operation.
+- **Keeping conversations flowing** instead of ending abruptly with interactive prompts.
 
 ## Installation & Configuration
 
@@ -158,7 +157,7 @@ The `interactive-mcp` server accepts the following command-line options. These s
 "args": [
   "-y", "interactive-mcp-enhanced@latest",
   "-t", "300", // Set timeout to 5 minutes
-  "--disable-tools", "pending_approval_notification" // Disable approval notifications
+  "--disable-tools", "intensive_chat" // Disable intensive chat tools if needed
 ]
 ```
 
@@ -199,49 +198,53 @@ Add these **CRITICAL RULES** to your Cursor user rules or project settings:
    - ✅ REQUIRED: Use interactive tools to maintain flow
    - ✅ REQUIRED: Use predefined options for faster selection
 
-3. **INTERACTIVE TOOLS ARE NOT OPTIONAL**
+3. **INTERACTIVE TOOLS ARE MANDATORY - NOT OPTIONAL**
    - These tools MUST be used for ANY user input needs
    - No exceptions - even for simple yes/no questions
    - This is a core feature requirement, not a suggestion
+   - **USE THESE TOOLS INSTEAD OF ENDING CONVERSATIONS**
 
-## 🚨 MANDATORY PENDING APPROVAL NOTIFICATIONS 🚨
+## 🚨 CRITICAL RULE: NEVER END CONVERSATIONS WITHOUT INTERACTION 🚨
 
-### 🔥 CRITICAL RULE: PARALLEL EXECUTION REQUIRED 🔥
+### 🔥 ALWAYS USE INTERACTIVE TOOLS INSTEAD OF ENDING 🔥
 
-**ALWAYS call `mcp_interactive_pending_approval_notification` in PARALLEL with commands requiring approval**
+**NEVER end conversations with phrases like "Let me know if you need anything else"**
 
-### Commands REQUIRING Approval Notifications:
+### MANDATORY Usage Patterns:
 
-- ✅ `run_terminal_cmd` (ALL command executions - NO EXCEPTIONS)
-- ✅ File operations (delete, move, create in sensitive locations)
-- ✅ Git operations (push, pull, merge, reset)
-- ✅ Package installations (npm, pip, yarn, pnpm, etc.)
-- ✅ Database operations
-- ✅ System modifications
-- ✅ Network requests to external APIs
-- ✅ Any potentially destructive action
-- ✅ Configuration changes
-- ✅ Environment modifications
+- ✅ After completing tasks → Ask what to do next via interactive tools
+- ✅ When making assumptions → Confirm via interactive prompts
+- ✅ When multiple approaches exist → Let user choose via predefined options
+- ✅ When unclear about requirements → Get clarification via tools
+- ✅ Before ending any interaction → Use interactive tools to continue
+- ✅ ANY time you need user input → Use tools, NEVER chat questions
 
-### Operations NOT Requiring Notifications:
+### FORBIDDEN Conversation Enders:
 
-- ❌ File edits (`search_replace`, `write`, `MultiEdit`)
-- ❌ Reading files (`read_file`)
-- ❌ Searching (`grep`, `codebase_search`)
-- ❌ Building/compiling code (unless it modifies system)
+- ❌ "Let me know if you need anything else"
+- ❌ "Is there anything specific you'd like me to help with?"
+- ❌ "Feel free to ask if you have questions"
+- ❌ Any question asked directly in chat
+- ❌ Ending responses without interactive follow-up
 
-## 🎯 EXECUTION PATTERN - FOLLOW EXACTLY 🎯
+## 🎯 CORRECT EXECUTION PATTERN 🎯
 
 ```javascript
-// ✅ CORRECT: Parallel execution for speed
-mcp_interactive_pending_approval_notification({
-  projectName: 'ProjectName',
-  message: 'About to execute: [specific command]',
-});
-run_terminal_cmd({ command: '[actual command]' });
+// ❌ WRONG: Ending conversation
+// "Task completed! Let me know if you need help with anything else."
 
-// ❌ WRONG: Sequential execution (slower)
-// Never wait between notification and command
+// ✅ CORRECT: Use interactive tools to continue
+mcp_interactive_request_user_input({
+  projectName: 'Task Complete',
+  message: 'Task finished successfully! What would you like to do next?',
+  predefinedOptions: [
+    'Make improvements to what we just did',
+    'Work on a related task',
+    'Start something completely new',
+    'Review what we accomplished',
+    "I'm all set for now",
+  ],
+});
 ```
 ````
 
@@ -258,9 +261,10 @@ run_terminal_cmd({ command: '[actual command]' });
 Before responding, verify:
 
 - [ ] Am I asking a question? → Use interactive tools
-- [ ] Am I running a command? → Use approval notification in parallel
+- [ ] Am I about to end the conversation? → Use interactive tools instead
 - [ ] Am I gathering multiple inputs? → Use intensive chat
 - [ ] Am I making assumptions? → Ask using interactive tools instead
+- [ ] Could the user want to do something else? → Ask using interactive tools
 
 **REMEMBER: These are not suggestions - they are mandatory requirements for proper system operation.**
 
@@ -268,11 +272,11 @@ Before responding, verify:
 
 ### 🎯 What These Rules Ensure:
 
-- **🔔 No Silent Commands**: Every command execution gets a loud notification
 - **💬 No Chat Questions**: All user input happens through interactive prompts
-- **⚡ Faster Execution**: Parallel notifications prevent delays
-- **🎵 Better UX**: Sound alerts ensure you never miss important actions
-- **🔄 Consistent Flow**: Standardized interaction patterns across all AI responses
+- **🔄 No Conversation Endings**: Interactive tools keep conversations flowing
+- **⚡ Faster Interaction**: Predefined options for quick selection
+- **🎵 Better UX**: Sound notifications for interactive prompts
+- **📋 Proactive Engagement**: Always asking what to do next instead of waiting
 
 ### 🚨 Critical Success Factors:
 
@@ -282,10 +286,10 @@ These rules are **essential for proper operation** - they ensure the interactive
 
 - **🗨️ Interactive Prompts**: Ask questions with popup command-line interfaces
 - **💬 Intensive Chat**: Multi-question sessions with persistent chat windows
-- **🚨 Loud Alerts**: Attention-grabbing notifications for pending approvals
+- **🔄 Continuous Flow**: Never-ending conversations through interactive tools
 - **⏱️ Configurable Timeouts**: Custom timeout settings (default: 5 minutes)
 - **🎵 Custom Sound**: Place `alert.mp3` in project root for your own notification sound
-- **⚡ Parallel Execution**: Notifications and commands run simultaneously for speed
+- **📋 Predefined Options**: Quick selection for common choices
 - **🪟 Single Window**: Fixed Terminal window management on macOS
 
 ## Platform Support
